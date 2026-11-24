@@ -1,3 +1,46 @@
+# 서울 자전거 다음 1시간 대여량 예측 — 실행 안내
+
+현재 시간의 대여량·기상정보로 다음 한 시간의 대여량을 예측하는 수업 프로젝트입니다. 공개 프로젝트를 바탕으로 AI의 도움을 받아 수정·확장했습니다.
+
+## 코드 위치
+
+- `src/`: 학습·실험·평가 코드 34개
+- `tests/`: 검사 코드 11개
+- `requirements-forecast.txt`: 이번 예측 실험의 설치 목록
+- `data/raw/SeoulBikeData.csv`: 기본 실험에 사용하는 원본
+
+## 기본 실험 재현 (Windows / Python 3.12 권장)
+
+저장소를 다운로드하고 압축을 푼 다음, 이 README가 있는 폴더에서 PowerShell을 열어 실행합니다.
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-forecast.txt
+.\.venv\Scripts\python.exe src/run_forecast.py
+```
+
+직전 대여량 기준·선형회귀·그래디언트 부스팅·RNN·Transformer를 비교합니다. 새 결과는 `reports/forecast/sequence/all_test_metrics.csv`에서 확인합니다. 기존 RNN 시험 MAE는 약 97.04대이며 실행 환경에 따라 작은 차이가 날 수 있습니다.
+
+학습·검증·시험은 시간순으로 분리했고, 모델 선택은 검증 MAE로 합니다. 신경망은 최근 24시간을 입력합니다. 최상위의 `solution.py`와 `full_workflow.py`는 업로드 과정에 남은 중복 파일이므로 실행은 위의 `src/run_forecast.py`를 사용합니다. 기존 `reports/` 최상위 파일은 원래 프로젝트의 결과이며, 이번 과제 결과는 실행 후 `reports/forecast/` 아래에 생성됩니다.
+
+## 외부요인 실험
+
+외부 입력자료·근거 원본·기존 학습 가중치·예측·PDF는 별도로 전달한 `재현용.zip`에 있습니다. 전체 실험을 재현하려면 그 ZIP의 `03_실행코드와전체자료` 폴더와 `실행방법.txt`를 사용하세요. 이 GitHub 저장소만으로 모든 외부요인 결과가 준비돼 있는 것은 아닙니다.
+
+- 달력·미세먼지: `src/run_forecast.py --with-air`
+- 일출일몰: `src/run_solar_experiment.py`
+- 일출일몰 혼합: `src/run_solar_mix_experiment.py`
+- 불쾌지수: `src/prepare_discomfort.py` 후 `src/run_discomfort_experiment.py`
+- 강수예보는 과거 자료 미확보로 보류했습니다.
+
+## 출처
+
+기존 코드: [Menagasweety/seoul-bike-demand-regression](https://github.com/Menagasweety/seoul-bike-demand-regression). 데이터: UCI Seoul Bike Sharing Demand, DOI 10.24432/C5F62R, CC BY 4.0. 기존 회귀 실험을 다음 한 시간 예측과 검증 선택에 맞게 바꾸고, 신경망·외부요인·출퇴근 분석을 확장했습니다.
+
+아래는 가져온 공개 프로젝트의 원래 설명입니다. 그 내용의 80/20 분리 및 실행 명령은 기존 분석을 설명하며, 이번 과제의 실행은 위 안내를 따릅니다. 로컬 문제별 커밋 전체를 전송한 것은 아닙니다.
+
+---
+
 # Seoul Bike Sharing Demand Regression
 
 A complete, beginner-friendly regression project that predicts the number of public bikes rented in Seoul each hour. It includes a real-world dataset, Excel EDA, a reproducible Python solution, model comparison, and feature-importance analysis.
